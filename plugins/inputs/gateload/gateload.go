@@ -1,4 +1,4 @@
-package syncgateway
+package gateload
 
 import (
 	"encoding/json"
@@ -105,10 +105,16 @@ func ParseExpvar(r io.ReadCloser) (stats map[string]interface{}, err error) {
 		return nil, fmt.Errorf("Error: ExpVars could not be unmarshalled: %v", err)
 	}
 
-	if glstats, ok := expvar["gateload"].(map[string]interface{}); ok {
-		stats = glstats
-	} else {
+	glstats, ok := expvar["gateload"].(map[string]interface{});
+
+	if !ok {
 		return nil, fmt.Errorf("Error: ExpVar gateload not a JSON Object")
+	}
+
+	stats, err = Flatten(glstats, "", DotStyle)
+
+	if err != nil {
+		return nil, fmt.Errorf("Error: ExpVar gateload not a nested JSON Object")
 	}
 
 	//Custom convert any json.Number values to int64 or float64
