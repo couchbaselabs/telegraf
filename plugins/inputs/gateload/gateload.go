@@ -14,7 +14,7 @@ import (
 
 const kDefaultExpVarHost = "http://localhost:9876"
 
-const kExpVarEndpoint = "_expvar"
+const kExpVarEndpoint = "debug/vars"
 
 type Gateload struct {
 	Server string
