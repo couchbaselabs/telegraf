@@ -9,6 +9,22 @@ if you don't have it already. You also must build with golang version 1.5+.
 
 1. [Install Go](https://golang.org/doc/install)
 2. [Setup your GOPATH](https://golang.org/doc/code.html#GOPATH)
+3. Run `mkdir $HOME/gotelegraf`
+4. Run `export GOPATH=$HOME/gotelegraf`
+5. Run `mkdir -p $GOPATH/src/github.com/influxdata`
+6. Run `cd $GOPATH/src/github.com/influxdata`
+7. Run `git clone git@github.com:couchbaselabs/telegraf`
+8. Run `cd telegraf`
+9. Run `make`
+
+
+### (Old Way)From Source:
+Telegraf manages dependencies via [gdm](https://github.com/sparrc/gdm),
+which gets installed via the Makefile
+if you don't have it already. You also must build with golang version 1.5+.
+
+1. [Install Go](https://golang.org/doc/install)
+2. [Setup your GOPATH](https://golang.org/doc/code.html#GOPATH)
 3. Run `go get github.com/influxdata/telegraf`
 4. Run `go get github.com/couchbaselabs/telegraf`
 5. Run `cd $GOPATH/src/github.com/influxdata/telegraf`
