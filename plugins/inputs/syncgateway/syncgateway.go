@@ -131,6 +131,31 @@ func ParseExpvar(r io.ReadCloser) ( stats map[string]interface{}, err error) {
 	if memstats, ok := expvar["memstats"].(map[string]interface{}); ok {
 		stats["memstatsAlloc"] = memstats["Alloc"];
 		stats["memstatsSys"] = memstats["Sys"];
+
+		stats["memstatsHeapIdle"] = memstats["HeapIdle"];
+		stats["memstatsPauseTotalNs"] = memstats["PauseTotalNs"];
+
+
+		/*
+		        "Sys": 7979970048,
+        "EnableGC": true,
+        "NextGC": 2592128900,
+        "HeapIdle": 2660057088,
+        "MSpanSys": 15122432,
+        "Alloc": 1954483328,
+        "NumGC": 165,
+        "HeapInuse": 1978777600,
+        "GCCPUFraction": 0.007529916277762372,
+        "Mallocs": 18742212,
+        "StackInuse": 3067150336,
+        "OtherSys": 13111464,
+        "TotalAlloc": 3788319280,
+        "DebugGC": false,
+        "HeapReleased": 0,
+        "MSpanInuse": 14820480,
+        "HeapObjects": 5433437
+
+		 */
 	} else {
 		return nil, fmt.Errorf("Error: ExpVar memstats not a JSON Object")
 	}
