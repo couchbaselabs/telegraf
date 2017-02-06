@@ -21,6 +21,6 @@ if you don't have it already. You also must build with golang version 1.5+.
 ### Deploying binary to mobile-testkit repo
 
 1. Repeat "From Source" instructions on Linux
-1. `cp ./cmd/telegraf /path/to/mobile-testkit/libraries/provision/ansible/playbooks/files`
+1. `cp $GOPATH/bin/telegraf /path/to/mobile-testkit/libraries/provision/ansible/playbooks/files`
 1. Commit and push
 
