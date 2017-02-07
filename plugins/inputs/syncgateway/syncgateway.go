@@ -130,19 +130,30 @@ func ParseExpvar(r io.ReadCloser) ( stats map[string]interface{}, err error) {
 	//publish memstats.Alloc and memstats.Sys
 	if memstats, ok := expvar["memstats"].(map[string]interface{}); ok {
 
-		// Gc stats
+		// General stats
+		stats["memstatsAlloc"] = memstats["Alloc"];
+		stats["memstatsTotalAlloc"] = memstats["TotalAlloc"];
+		stats["memstatsSys"] = memstats["Sys"];
+
+		// Main allocation heap statistics.
+		stats["memstatsHeapAlloc"] = memstats["HeapAlloc"];
+		stats["memstatsHeapSys"] = memstats["HeapSys"];
+		stats["memstatsHeapIdle"] = memstats["HeapIdle"];
+		stats["memstatsHeapInuse"] = memstats["HeapInuse"];
+		stats["memstatsHeapReleased"] = memstats["HeapReleased"];
+
+		// Low-level fixed-size structure allocator statistics.
+		stats["memstatsStackInuse"] = memstats["StackInuse"];
+		stats["memstatsStackSys"] = memstats["StackSys"];
+		stats["memstatsMSpanInuse"] = memstats["MSpanInuse"];
+		stats["memstatsMSpanSys"] = memstats["MSpanSys"];
+		stats["memstatsMCacheInuse"] = memstats["MCacheInuse"];
+		stats["memstatsMCacheSys"] = memstats["MCacheSys"];
+
+		// Garbage collector statistics.
 		stats["memstatsPauseTotalNs"] = memstats["PauseTotalNs"];
 		stats["memstatsNumGC"] = memstats["NumGC"];
 
-		// Mem stats
-		stats["memstatsAlloc"] = memstats["Alloc"];
-		stats["memstatsSys"] = memstats["Sys"];
-		stats["memstatsHeapIdle"] = memstats["HeapIdle"];
-		stats["memstatsHeapInuse"] = memstats["HeapInuse"];
-		stats["memstatsStackInuse"] = memstats["StackInuse"];
-		stats["memstatsTotalAlloc"] = memstats["TotalAlloc"];
-		stats["memstatsMSpanInuse"] = memstats["MSpanInuse"];
-		
 
 	} else {
 		return nil, fmt.Errorf("Error: ExpVar memstats not a JSON Object")
