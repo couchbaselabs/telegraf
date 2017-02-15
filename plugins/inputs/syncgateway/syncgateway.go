@@ -184,6 +184,20 @@ func extractGoCouchbaseStats(expvar map[string]interface{}, stats map[string]int
 
 }
 
+func extractSyncGatewayStats(expvar map[string]interface{}, stats map[string]interface{}) {
+
+	if syncGwStatsMap, ok := expvar["syncGateway_stats"].(map[string]interface{}); ok {
+
+		stats["syncGwStatsBulkApiBulkDocsPerDocRollingMean"] = syncGwStatsMap["bulkApi.BulkDocsPerDocRollingMean"];
+		stats["syncGwStatsBulkApiBulkDocsRollingMean"] = syncGwStatsMap["bulkApi.BulkDocsRollingMean"];
+
+		stats["syncGwStatsBulkApiBulkGetPerDocRollingMean"] = syncGwStatsMap["bulkApi.BulkGetPerDocRollingMean"];
+		stats["syncGwStatsBulkApiBulkGetRollingMean"] = syncGwStatsMap["bulkApi.BulkGetRollingMean"];
+		stats["syncGwStatsBulkApiCheckAuthRollingMean"] = syncGwStatsMap["bulkApi.CheckAuthRollingMean"];
+
+	}
+}
+
 func ParseExpvar(r io.ReadCloser) ( stats map[string]interface{}, err error) {
 	var expvar map[string]interface{}
 
@@ -235,6 +249,8 @@ func ParseExpvar(r io.ReadCloser) ( stats map[string]interface{}, err error) {
 	// Extract any go-couchbase stats from expvars and store into stats
 	extractGoCouchbaseStats(expvar, stats)
 
+	// Extract stats under the syncGateway_stats section
+	extractSyncGatewayStats(expvar, stats)
 
 	//Custom convert any json.Number values to int64 or float64
 	for k, v := range stats {
