@@ -111,6 +111,79 @@ func ParseExpvar(r io.ReadCloser) (map[string]interface{}, error) {
 }
 */
 
+func extractGoCouchbaseStats(expvar map[string]interface{}, stats map[string]interface{}) {
+
+	if goCouchbaseStats, ok := expvar["cb"].(map[string]interface{}); ok {
+
+		goCouchbasePoolStats, ok := goCouchbaseStats["pools"]
+		if ok {
+			goCouchbasePoolStatsMap, ok := goCouchbasePoolStats.(map[string]interface{})
+			if ok {
+				if len(goCouchbasePoolStatsMap) > 0 {
+
+					var poolFirstHostname string
+					for poolFirstHostname, _ = range goCouchbasePoolStatsMap {
+						break
+					}
+					firstPoolStats := goCouchbasePoolStatsMap[poolFirstHostname]
+					firstPoolStatsMap, ok := firstPoolStats.(map[string]interface{})
+					if ok {
+						stats["goCouchbasePoolsP90"] = firstPoolStatsMap["p90"];
+						stats["goCouchbasePoolsCount"] = firstPoolStatsMap["count"];
+					}
+				}
+			}
+		}
+		goCouchbaseOpsStats, ok := goCouchbaseStats["ops"]
+		if ok {
+			goCouchbaseOpsStatsMap, ok := goCouchbaseOpsStats.(map[string]interface{})
+			if ok {
+
+				// Incr stats
+				goCouchbaseIncrStats, ok := goCouchbaseOpsStatsMap["Incr"]
+				if ok {
+					goCouchbaseIncrStatsMap, ok := goCouchbaseIncrStats.(map[string]interface{})
+					if ok {
+						stats["goCouchbaseIncrP90"] = goCouchbaseIncrStatsMap["p90"]
+					}
+				}
+
+				// casNext stats
+				goCouchbaseCasNextStats, ok := goCouchbaseOpsStatsMap["casNext"]
+				if ok {
+					goCouchbaseCasNextStatsMap, ok := goCouchbaseCasNextStats.(map[string]interface{})
+					if ok {
+						stats["goCouchbaseCaxNextP90"] = goCouchbaseCasNextStatsMap["p90"]
+					}
+				}
+
+				// GetsRaw stats
+				goCouchbaseGetsRawStats, ok := goCouchbaseOpsStatsMap["GetsRaw"]
+				if ok {
+					goCouchbaseGetsRawStatsMap, ok := goCouchbaseGetsRawStats.(map[string]interface{})
+					if ok {
+						stats["goCouchbaseGetsRawP90"] = goCouchbaseGetsRawStatsMap["p90"]
+					}
+				}
+
+				// Write(raw) stats
+				goCouchbaseWriteRawStats, ok := goCouchbaseOpsStatsMap["Write(raw)"]
+				if ok {
+					goCouchbaseWriteRawStatsMap, ok := goCouchbaseWriteRawStats.(map[string]interface{})
+					if ok {
+						stats["goCouchbaseWriteRawP90"] = goCouchbaseWriteRawStatsMap["p90"]
+					}
+				}
+
+			}
+
+		}
+
+	}
+
+
+}
+
 func ParseExpvar(r io.ReadCloser) ( stats map[string]interface{}, err error) {
 	var expvar map[string]interface{}
 
@@ -158,6 +231,10 @@ func ParseExpvar(r io.ReadCloser) ( stats map[string]interface{}, err error) {
 	} else {
 		return nil, fmt.Errorf("Error: ExpVar memstats not a JSON Object")
 	}
+
+	// Extract any go-couchbase stats from expvars and store into stats
+	extractGoCouchbaseStats(expvar, stats)
+
 
 	//Custom convert any json.Number values to int64 or float64
 	for k, v := range stats {
