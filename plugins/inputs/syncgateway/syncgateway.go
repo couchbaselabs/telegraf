@@ -186,16 +186,17 @@ func extractGoCouchbaseStats(expvar map[string]interface{}, stats map[string]int
 
 func extractSyncGatewayStats(expvar map[string]interface{}, stats map[string]interface{}) {
 
-	if syncGwStatsMap, ok := expvar["syncGateway_stats"].(map[string]interface{}); ok {
+	if syncGwStats, ok := expvar["syncGateway_stats"]; ok {
+		if syncGwStatsMap, ok := syncGwStats.(map[string]interface{}); ok {
+			stats["syncGwStatsBulkApiBulkDocsPerDocRollingMean"] = syncGwStatsMap["bulkApi.BulkDocsPerDocRollingMean"];
+			stats["syncGwStatsBulkApiBulkDocsRollingMean"] = syncGwStatsMap["bulkApi.BulkDocsRollingMean"];
 
-		stats["syncGwStatsBulkApiBulkDocsPerDocRollingMean"] = syncGwStatsMap["bulkApi.BulkDocsPerDocRollingMean"];
-		stats["syncGwStatsBulkApiBulkDocsRollingMean"] = syncGwStatsMap["bulkApi.BulkDocsRollingMean"];
-
-		stats["syncGwStatsBulkApiBulkGetPerDocRollingMean"] = syncGwStatsMap["bulkApi.BulkGetPerDocRollingMean"];
-		stats["syncGwStatsBulkApiBulkGetRollingMean"] = syncGwStatsMap["bulkApi.BulkGetRollingMean"];
-		stats["syncGwStatsBulkApiCheckAuthRollingMean"] = syncGwStatsMap["bulkApi.CheckAuthRollingMean"];
-
+			stats["syncGwStatsBulkApiBulkGetPerDocRollingMean"] = syncGwStatsMap["bulkApi.BulkGetPerDocRollingMean"];
+			stats["syncGwStatsBulkApiBulkGetRollingMean"] = syncGwStatsMap["bulkApi.BulkGetRollingMean"];
+			stats["syncGwStatsBulkApiCheckAuthRollingMean"] = syncGwStatsMap["bulkApi.CheckAuthRollingMean"];
+		}
 	}
+
 }
 
 func ParseExpvar(r io.ReadCloser) ( stats map[string]interface{}, err error) {

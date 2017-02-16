@@ -6,6 +6,37 @@ import (
 	"log"
 )
 
+func TestExtractSyncGatewayStatsEmpty(t *testing.T) {
+
+	jsonString := `{}`
+	expvarsMap := parseMapFromJsonString(t, jsonString)
+
+	stats := map[string]interface{}{}
+
+	extractSyncGatewayStats(expvarsMap, stats)
+
+	if len(stats) > 0 {
+		t.Fatalf("Expected empty map")
+	}
+
+}
+
+func TestExtractSyncGatewayStats(t *testing.T) {
+
+	jsonString := `{"syncGateway_stats": {"bulkApi.BulkDocsPerDocRollingMean": 10}}`
+	expvarsMap := parseMapFromJsonString(t, jsonString)
+
+	stats := map[string]interface{}{}
+
+	extractSyncGatewayStats(expvarsMap, stats)
+
+	_, ok := stats["syncGwStatsBulkApiBulkDocsPerDocRollingMean"]
+	if !ok {
+		t.Fatalf("Expected syncGwStatsBulkApiBulkDocsPerDocRollingMean stat")
+	}
+
+}
+
 func TestExtractGoCouchbaseStats(t *testing.T) {
 
 	jsonString := `
@@ -79,16 +110,9 @@ func TestExtractGoCouchbaseStats(t *testing.T) {
 }
 	`
 
-	var expvars interface{}
-	err := json.Unmarshal([]byte(jsonString), &expvars)
-	if err != nil {
-		t.Fatalf("Failed to unmarshal json")
-	}
 
-	expvarsMap, ok := expvars.(map[string]interface{})
-	if !ok {
-		t.Fatalf("Expected map")
-	}
+
+	expvarsMap := parseMapFromJsonString(t, jsonString)
 
 	stats := map[string]interface{}{}
 
@@ -110,4 +134,20 @@ func TestExtractGoCouchbaseStats(t *testing.T) {
 	}
 
 
+}
+
+func parseMapFromJsonString(t *testing.T, jsonString string) map[string]interface{} {
+
+	var expvars interface{}
+	err := json.Unmarshal([]byte(jsonString), &expvars)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal json")
+	}
+
+	expvarsMap, ok := expvars.(map[string]interface{})
+	if !ok {
+		t.Fatalf("Expected map")
+	}
+
+	return expvarsMap
 }
