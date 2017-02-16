@@ -19,21 +19,38 @@ func TestExtractSyncGatewayStatsEmpty(t *testing.T) {
 		t.Fatalf("Expected empty map")
 	}
 
+	extractGoCouchbaseStats(expvarsMap, stats)
+
+	if len(stats) > 0 {
+		t.Fatalf("Expected empty map")
+	}
+
+
 }
 
 func TestExtractSyncGatewayStats(t *testing.T) {
 
-	jsonString := `{"syncGateway_stats": {"bulkApi.BulkDocsPerDocRollingMean": 10}}`
+	jsonString := `{"syncGateway_stats": {"handler.CheckAuthRollingMean": 10}}`
 	expvarsMap := parseMapFromJsonString(t, jsonString)
 
 	stats := map[string]interface{}{}
 
 	extractSyncGatewayStats(expvarsMap, stats)
 
-	_, ok := stats["syncGwStatsBulkApiBulkDocsPerDocRollingMean"]
+	syncGwStatsBulkApiBulkDocsPerDocRollingMean, ok := stats["syncGwStatsHandlerCheckAuthRollingMean"]
 	if !ok {
 		t.Fatalf("Expected syncGwStatsBulkApiBulkDocsPerDocRollingMean stat")
 	}
+
+	syncGwStatsBulkApiBulkDocsPerDocRollingMeanFloat64, ok := syncGwStatsBulkApiBulkDocsPerDocRollingMean.(float64)
+	if !ok {
+		t.Fatalf("Expected syncGwStatsBulkApiBulkDocsPerDocRollingMeanFloat64 to be a float64, was: %T", syncGwStatsBulkApiBulkDocsPerDocRollingMean)
+	}
+
+	if syncGwStatsBulkApiBulkDocsPerDocRollingMeanFloat64 != 10 {
+		t.Fatalf("Did not get expected syncGwStatsBulkApiBulkDocsPerDocRollingMeanFloat64 value")
+	}
+
 
 }
 

@@ -193,7 +193,8 @@ func extractSyncGatewayStats(expvar map[string]interface{}, stats map[string]int
 
 			stats["syncGwStatsBulkApiBulkGetPerDocRollingMean"] = syncGwStatsMap["bulkApi.BulkGetPerDocRollingMean"];
 			stats["syncGwStatsBulkApiBulkGetRollingMean"] = syncGwStatsMap["bulkApi.BulkGetRollingMean"];
-			stats["syncGwStatsBulkApiCheckAuthRollingMean"] = syncGwStatsMap["bulkApi.CheckAuthRollingMean"];
+
+			stats["syncGwStatsHandlerCheckAuthRollingMean"] = syncGwStatsMap["handler.CheckAuthRollingMean"];
 		}
 	}
 
